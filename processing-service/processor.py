@@ -41,7 +41,18 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:1b")
 # Bounds how long a single Ollama request may block, so a hung Ollama
 # instance can't stall anomaly processing indefinitely.
-OLLAMA_REQUEST_TIMEOUT = float(os.getenv("OLLAMA_REQUEST_TIMEOUT", "30"))
+_DEFAULT_OLLAMA_REQUEST_TIMEOUT = 30.0
+try:
+    OLLAMA_REQUEST_TIMEOUT = float(
+        os.getenv("OLLAMA_REQUEST_TIMEOUT", str(_DEFAULT_OLLAMA_REQUEST_TIMEOUT))
+    )
+except ValueError:
+    logger.warning(
+        "Invalid OLLAMA_REQUEST_TIMEOUT=%r (not a number); using default %ss",
+        os.getenv("OLLAMA_REQUEST_TIMEOUT"),
+        _DEFAULT_OLLAMA_REQUEST_TIMEOUT,
+    )
+    OLLAMA_REQUEST_TIMEOUT = _DEFAULT_OLLAMA_REQUEST_TIMEOUT
 _ollama_client = ollama.Client(host=OLLAMA_HOST, timeout=OLLAMA_REQUEST_TIMEOUT)
 
 

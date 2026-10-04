@@ -193,11 +193,10 @@ def test_run_ai_analysis_uses_configured_model():
     assert mock_chat.call_args.kwargs["model"] == OLLAMA_MODEL
 
 
-def test_ollama_model_env_var_overrides_default(monkeypatch):
-    """OLLAMA_MODEL is read from the environment at import time (with
-    "llama3.2:1b" as the default), and run_ai_analysis always uses the
-    current module-level value rather than a hardcoded literal - so
-    reconfiguring OLLAMA_MODEL changes the model used with no code change.
+def test_run_ai_analysis_uses_module_ollama_model(monkeypatch):
+    """run_ai_analysis always uses the current module-level OLLAMA_MODEL
+    rather than a hardcoded literal, so changing OLLAMA_MODEL changes the
+    model used with no code change. (This does not exercise os.getenv itself.)
     (monkeypatch.setattr on the already-imported module is used instead of
     importlib.reload, because reloading processor.py re-executes its
     module-level prometheus_client.Counter/Histogram registrations and
